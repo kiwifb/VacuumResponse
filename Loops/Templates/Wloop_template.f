@@ -1,0 +1,6 @@
+!HPF$ TEMPLATE link(nx,ny,nz,nt,nc,nc)
+!HPF$ DISTRIBUTE link(*,*,BLOCK,BLOCK,*,*)
+!HPF$ TEMPLATE wloops(nx,ny,nz,nt,nL(that))
+!HPF$ DISTRIBUTE wloops(BLOCK,BLOCK,*,*,*)
+!HPF$ TEMPLATE correl(0:ny-1,0:nz-1,0:nt-1,nL(that),offmax)
+!HPF$ DISTRIBUTE correl(*,BLOCK,BLOCK,*,*)

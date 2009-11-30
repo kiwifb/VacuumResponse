@@ -1,0 +1,1 @@
+      write(configfile,'(a)') "./yconfig"

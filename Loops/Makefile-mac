@@ -1,0 +1,120 @@
+##############################################
+#
+#  Helix, Orion, APAC and PC settings
+#
+#COMPILER = pghpf
+#CFLAGS   = -Mextend -I../GSnew
+#helix
+#OPT    = -Mmpi -O2 -Mnoframe -Mvect=sse -Minfo -byteswapio
+#LINK   = -L/opt/mpich/gnu/lib
+#LINK   = -L/usr/opt/mpi/lib
+#Orion OPT      = -Mmpi -64 -fast -W0,-fast -W0,-xvector=no -xarch=v9a
+#Linux OPT      = -byteswapio
+#Linux intel fortran
+#COMPILER = ifort
+#CFLAGS   = -132 -I../GSnew
+#OPT      = -warn all -O2 -ansi_alias -scalar_rep -parallel -static -vec_report5 -convert big_endian
+#Linux g95
+COMPILER  = ~/Documents/g95-install/bin/powerpc-apple-darwin6.8-g95
+CFLAGS    = -I../GSnew -ffixed-line-length-132
+OPT       = -Wall -mabi=altivec -maltivec -O2 -mcpu=7450
+#APAC  OPT      = -Mmpi -fast -W0,-fast -Mbyteswapio
+#Other OPT      = -byteswapio    -fast -W0,-fast   -O4 -W0,-O4
+
+.SUFFIXES: .f .o
+.f.o:
+	$(COMPILER) $(CFLAGS) $(OPT) -c $<
+
+COMDIR = ../GSnew
+
+COMMON = $(COMDIR)/fixsu3.o \
+         $(COMDIR)/newFixsu3.o \
+         $(COMDIR)/readLinks.o \
+         $(COMDIR)/getAction.o \
+         $(COMDIR)/squares.o \
+         $(COMDIR)/staples.o \
+         $(COMDIR)/rectangles.o \
+         $(COMDIR)/uu.o \
+         $(COMDIR)/tadpoleimp.o \
+	 $(COMDIR)/cooling.o
+#         /usr/pgi/src/sunmpi64.o
+
+Dir   =  epsilonIndex.o \
+         product.o \
+         staples3D.o \
+         ape_smear.o \
+         ape_smear3D.o \
+         eleMagField.o \
+         topQandReconAction.o \
+         lotsaLoops.o \
+         fMuNu.o
+
+BAR   =  baryonParam.o
+#         /usr/pgi/src/sunmpi64.o
+
+Ysh   = Yshape/loops.o \
+	Yshape/writeshape.o
+
+VYsh  = VYshape/loops.o \
+	VYshape/writeshape.o
+
+Lsh   = Lshape/loops.o \
+	Lshape/writeshape.o
+
+TYsh  = TYshape/loops.o \
+	TYshape/writeshape.o
+
+DQsh  = DiQuark/loops.o \
+	DiQuark/writeshape.o
+
+QQ    = qqbar/loops.o \
+	qqbar/writeshape.o
+
+EXECS = VacuumRespY \
+	VacuumRespL \
+	VacuumRespTY \
+	VacuumRespVY \
+	VacuumRespQQ \
+	VacuumRespDQ
+
+all: gsnew essential $(EXECS)
+
+essential : mbar $(Dir)
+
+gsnew :
+	$(MAKE) -C ../GSnew
+
+mbar : $(BAR)
+
+VacuumRespQQ :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C qqbar -f ../Templates/Makefile
+	$(COMPILER) $(CFLAGS) $(OPT) -Iqqbar -cpp -o VacuumRespQQ VacuumResp.f $(COMMON) $(BAR) $(Dir) $(QQ) $(LINK)
+
+VacuumRespY :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C Yshape -f ../Templates/Makefile
+	$(COMPILER) $(CFLAGS) $(OPT) -IYshape -cpp -o VacuumRespY VacuumResp.f $(COMMON) $(BAR) $(Dir) $(Ysh) $(LINK)
+
+VacuumRespL :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C Lshape -f ../Templates/Makefile
+	$(COMPILER) $(CFLAGS) $(OPT) -ILshape -cpp -o VacuumRespL VacuumResp.f $(COMMON) $(BAR) $(Dir) $(Lsh) $(LINK)
+
+VacuumRespVY :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C VYshape -f ../Templates/Makefile
+	$(COMPILER) $(CFLAGS) $(OPT) -IVYshape -cpp -o VacuumRespVY VacuumResp.f $(COMMON) $(BAR) $(Dir) $(VYsh) $(LINK)
+
+VacuumRespTY :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C TYshape -f ../Templates/Makefile
+	$(COMPILER) $(CFLAGS) $(OPT) -ITYshape -cpp -o VacuumRespTY VacuumResp.f $(COMMON) $(BAR) $(Dir) $(TYsh) $(LINK)
+
+VacuumRespDQ :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C DiQuark -f ../Templates/Makefile
+	$(COMPILER) $(CFLAGS) $(OPT) -IDiQuark -cpp -o VacuumRespDQ VacuumResp.f $(COMMON) $(BAR) $(Dir) $(DQsh) $(LINK)
+
+clean :
+	rm -f *.o *~* *.mod $(EXECS)
+	rm -f qqbar/*.o qqbar/*~* qqbar/*.mod
+	rm -f Yshape/*.o Yshape/*~* Yshape/*.mod
+	rm -f Lshape/*.o Lshape/*~* Lshape/*.mod
+	rm -f VYshape/*.o VYshape/*~* VYshape/*.mod
+	rm -f TYshape/*.o TYshape/*~* TYshape/*.mod
+	rm -f DiQuark/*.o DiQuark/*~* DiQuark/*.mod

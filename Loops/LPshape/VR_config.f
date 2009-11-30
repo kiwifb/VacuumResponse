@@ -1,0 +1,3 @@
+      write(configfile,'(a)') "./lpconfig"
+
+
