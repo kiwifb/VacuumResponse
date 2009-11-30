@@ -1,0 +1,6 @@
+This is a repo of my lattice QCD code.
+It is a bit useless without lattice configuration to 
+make computation with.
+This is mainly intended for my own needs to be
+able to synchronize easily between various location.
+
