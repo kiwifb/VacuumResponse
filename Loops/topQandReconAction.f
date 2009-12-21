@@ -16,9 +16,9 @@ c
 
       implicit none
 
-      integer,parameter	                                      :: nc=3
-      integer,parameter	                                      :: mu=4
-      integer,parameter	                                      :: nf=6
+      integer,parameter                                       :: nc=3
+      integer,parameter                                       :: mu=4
+      integer,parameter                                       :: nf=6
       double precision,dimension(nx,ny,nz,nt,nc,nc,nf)        :: Fr,Fi
 !HPF$ DISTRIBUTE Fr(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE Fi(*,*,BLOCK,BLOCK,*,*,*)
@@ -34,7 +34,7 @@ c
 c     local variables
 c
       double precision                                        :: pi
-      integer	                                              :: ic,jc,kc,i,j
+      integer                                                 :: ic,jc,kc,i,j
       integer,dimension(2:mu,1:mu-1)                          :: Findex
 !HPF$ DISTRIBUTE Findex(*,*)
 
@@ -58,7 +58,7 @@ c     single index by the following relation
 c 
       do i=2,mu
          do j =1,i-1
-         
+
             Findex(i,j) = (i+j) - 3 * ( (i-j) / 3 ) - 1
 
          end do

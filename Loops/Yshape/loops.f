@@ -26,58 +26,58 @@ c
 c
 c     products of links
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: uptr,upti
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: uptr,upti
 !HPF$ DISTRIBUTE uptr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE upti(*,*,BLOCK,BLOCK,*,*)
 c
 c     bottom and top links (built up iteratively)
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: bxlr,bxli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: bxlr,bxli
 !HPF$ DISTRIBUTE bxlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE bxli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: bllr,blli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: bllr,blli
 !HPF$ DISTRIBUTE bllr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE blli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: brlr,brli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: brlr,brli
 !HPF$ DISTRIBUTE brlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE brli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: tlr,tli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: tlr,tli
 !HPF$ DISTRIBUTE tlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE tli(*,*,BLOCK,BLOCK,*,*)
 c
 c     Mirror bottom links
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: mbxlr,mbxli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: mbxlr,mbxli
 !HPF$ DISTRIBUTE mbxlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE mbxli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: mbllr,mblli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: mbllr,mblli
 !HPF$ DISTRIBUTE mbllr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE mblli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: mbrlr,mbrli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: mbrlr,mbrli
 !HPF$ DISTRIBUTE mbrlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE mbrli(*,*,BLOCK,BLOCK,*,*)
 c
 c     shifted time links
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: ustr,usti
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: ustr,usti
 !HPF$ DISTRIBUTE ustr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE usti(*,*,BLOCK,BLOCK,*,*)
 c
 c     staples/temporary arrays
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: sxlr,sxli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sxlr,sxli
 !HPF$ DISTRIBUTE sxlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE sxli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: sllr,slli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sllr,slli
 !HPF$ DISTRIBUTE sllr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE slli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: srlr,srli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: srlr,srli
 !HPF$ DISTRIBUTE srlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE srli(*,*,BLOCK,BLOCK,*,*)
 c
 c     temporary arrays
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: tmpr,tmpi
+      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: tmpr,tmpi
 !HPF$ DISTRIBUTE tmpr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE tmpi(*,*,BLOCK,BLOCK,*,*)
       double precision,dimension(nx,ny,nz,nt)                           :: Res
@@ -85,7 +85,7 @@ c
 c
 c     local variables
 c
-      integer                                                 		:: ic,jc,kc
+      integer                                                           :: ic,jc,kc
 c
 c     Mirror top (-xtop,0)
 c
@@ -241,7 +241,7 @@ c     global variables
 c
 #include"loopsize.f"
       integer                                                                   :: xdir,ydir
-      double precision,dimension(nx,ny,nz,nt,mu,nc,nc)            	 	:: ur,ui
+      double precision,dimension(nx,ny,nz,nt,mu,nc,nc)                          :: ur,ui
 !HPF$ DISTRIBUTE ur(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE ui(*,*,BLOCK,BLOCK,*,*,*)
 c
@@ -365,7 +365,7 @@ c     global variables
 c
 #include"loopsize.f"
       integer                                                           :: xdir,ydir
-      double precision,dimension(nx,ny,nz,nt,mu,nc,nc)            	 	:: ur,ui
+      double precision,dimension(nx,ny,nz,nt,mu,nc,nc)                  :: ur,ui
 !HPF$ DISTRIBUTE ur(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE ui(*,*,BLOCK,BLOCK,*,*,*)
 c

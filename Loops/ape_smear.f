@@ -15,19 +15,19 @@ c
 
 c     global variables
 
-      integer,parameter            	                        :: nc=3 !sigma,color
-      integer,parameter            	                        :: nd=4 !direction
+      integer,parameter                                         :: nc=3 !sigma,color
+      integer,parameter                                         :: nd=4 !direction
 
 
-      double precision,dimension(nx,ny,nz,nt,nd,nc,nc)  :: ur,ui
+      double precision,dimension(nx,ny,nz,nt,nd,nc,nc)          :: ur,ui
 !HPF$ DISTRIBUTE ur(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE ui(*,*,BLOCK,BLOCK,*,*,*)
 
-      double precision			                        :: alpha          ! smearing fraction
+      double precision                                          :: alpha          ! smearing fraction
 
 c  local variables
 
-      integer                     	                        :: xhat
+      integer                                                   :: xhat
 
       double precision,dimension(nx,ny,nz,nt,nc,nc)             ::stapler,staplei !smeared links
 !HPF$ DISTRIBUTE stapler(*,*,BLOCK,BLOCK,*,*)
@@ -38,22 +38,22 @@ c  local variables
 !HPF$ DISTRIBUTE ui_prm(*,*,BLOCK,BLOCK,*,*,*)
 
 
-      integer                 		                        :: ic,jc          !counters
-      double precision			                        :: g	          ! g = alpha/(2*(nd-1))
+      integer                                                   :: ic,jc          !counters
+      double precision                                          :: g              ! g = alpha/(2*(nd-1))
 
 c     starting the execution commands
       g = alpha/(2*(nd-1))
-	
+
       do xhat=1,nd
-	
+
          call squares(ur,ui,stapler,staplei,xhat,.true.)
-	 
+ 
          do ic=1,nc
-	    do jc=1,nc
-	    
+           do jc=1,nc
+
                ur_prm(:,:,:,:,xhat,ic,jc) = (1-alpha)*ur(:,:,:,:,xhat,ic,jc) + g*stapler(:,:,:,:,jc,ic)
                ui_prm(:,:,:,:,xhat,ic,jc) = (1-alpha)*ui(:,:,:,:,xhat,ic,jc) - g*staplei(:,:,:,:,jc,ic)
-	    
+
             end do
          end do
       end do 

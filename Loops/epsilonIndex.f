@@ -2,9 +2,9 @@
 c
 c  creates the color permutation index vectors
 c
-	implicit none
-	integer          :: la(36),lb(36),lc(36),lap(36),lbp(36),lcp(36)
-	double precision :: fper(36)
+        implicit none
+        integer          :: la(36),lb(36),lc(36),lap(36),lbp(36),lcp(36)
+        double precision :: fper(36)
 
         CONTAINS
 

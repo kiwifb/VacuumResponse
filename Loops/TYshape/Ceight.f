@@ -16,17 +16,17 @@ c     left leg, i.e., quark at (0, 7)
 c
          call product(ur,ui,ydir,bllr,blli,7)
 
-         ustr = cshift(uptr,dim=ydir,shift= 7) 
+         ustr = cshift(uptr,dim=ydir,shift= 7)
          usti = cshift(upti,dim=ydir,shift= 7)
 
          include 'leftleg.f'
 c
 c     right leg, i.e., quark at (0,-7)
 c
-         brlr = cshift(bllr,dim=ydir,shift=-7) 
-         brli = cshift(blli,dim=ydir,shift=-7) 
+         brlr = cshift(bllr,dim=ydir,shift=-7)
+         brli = cshift(blli,dim=ydir,shift=-7)
 
-         ustr = cshift(uptr,dim=ydir,shift=-7) 
+         ustr = cshift(uptr,dim=ydir,shift=-7)
          usti = cshift(upti,dim=ydir,shift=-7)
 
          include 'rightleg.f'

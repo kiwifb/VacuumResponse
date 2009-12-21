@@ -15,10 +15,10 @@ c
 
 c     global variables
 
-      integer,parameter	                                      :: nc=3                   !no. colours
-      integer,parameter	                                      :: mu=4                   !no. dimensions
+      integer,parameter                                       :: nc=3                   !no. colours
+      integer,parameter                                       :: mu=4                   !no. dimensions
 
-      integer,parameter	                                      :: nf=6
+      integer,parameter                                       :: nf=6
 
       double precision,dimension(nx,ny,nz,nt,mu,nc,nc)        :: ur,ui
 !HPF$ DISTRIBUTE ur(*,*,BLOCK,BLOCK,*,*,*)
@@ -48,8 +48,8 @@ c     local variables
 !HPF$ DISTRIBUTE fsr(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE fsi(*,*,BLOCK,BLOCK,*,*,*)
 
-      integer	                                              :: ic,jc,kc,muhat,nuhat   !loop variables
-      integer	                                              :: index
+      integer                                                 :: ic,jc,kc,muhat,nuhat   !loop variables
+      integer                                                 :: index
 
 c     start of the execution commands.
 c
@@ -117,7 +117,7 @@ c
             staplei = 0.0d0
 
             call LotsaLoops(fsr,fsi,stapler,staplei,muhat,2,Qpaths,uzero,nuhat,.true.)
-       
+
             do ic=1,nc
                do jc=1,nc
                   do kc=1,nc
@@ -184,28 +184,28 @@ c     Hence multiply C by -i/2 to get g*F_mu_nu.
 c
             do ic=1,nc
                do jc=1,nc
-                  
+
                   Fi(:,:,:,:,ic,jc,index) = -(Cr(:,:,:,:,ic,jc) - Cr(:,:,:,:,jc,ic))/2.0d0
                   Fr(:,:,:,:,ic,jc,index) =  (Ci(:,:,:,:,ic,jc) + Ci(:,:,:,:,jc,ic))/2.0d0
-               
+
                end do
             end do
-c  
+c
 c     Fi is traceless, Fr is not, but the Gell-Mann Matrices are. 
 c     Therefore subtract 1/3 the trace from each diagonal element of Fr.
 c
             TrFr = 0.0d0
-          
+
             do ic=1,nc
-       
+
                TrFr(:,:,:,:) = TrFr(:,:,:,:) + Fr(:,:,:,:,ic,ic,index)
-       
+
             end do
 
             do ic=1,nc
-      
+
                Fr(:,:,:,:,ic,ic,index) = Fr(:,:,:,:,ic,ic,index) - TrFr(:,:,:,:)/3.0d0
-  
+
             end do
 
          end do

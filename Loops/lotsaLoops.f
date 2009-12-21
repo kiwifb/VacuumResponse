@@ -19,7 +19,7 @@ c     local variables
 
       integer,parameter                                       :: nc=3
       integer,parameter                                       :: mu=4
-      
+
       double precision,dimension(nx,ny,nz,nt,mu,nc,nc)        :: ur,ui
 !HPF$ DISTRIBUTE ur(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE ui(*,*,BLOCK,BLOCK,*,*,*)
@@ -104,11 +104,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c testing 1, 2 ,3 ...
 c
-            C5 = 1.0d0 
+            C5 = 1.0d0
             C1 = 1.0d0
             C2 = 1.0d0
             C3 = 1.0d0
-            C4 = 1.0d0        
+            C4 = 1.0d0
 c
          else if (loops == 1) then
 c
@@ -154,7 +154,7 @@ c
 c
 c square + rect + window + ladder + picture window
 c
-            C5 =   0.05d0 
+            C5 =   0.05d0
             C1 = (19.0d0 - C5* 55.0d0)/9.0d0
             C2 = ( 1.0d0 - C5* 64.0d0)/(144.0d0 * uzero**4)
             C3 =-(64.0d0 - C5*640.0d0)/(360.0d0 * uzero**2)
@@ -185,11 +185,11 @@ c
 c
 c testing 1, 2 ,3 ...
 c
-            C5 = 1.0d0 
+            C5 = 1.0d0
             C1 = 1.0d0
             C2 = 1.0d0
             C3 = 1.0d0
-            C4 = 1.0d0        
+            C4 = 1.0d0
 c
          else if (loops == 1) then
 c
@@ -215,7 +215,7 @@ c
 c
 c square + window + picture window
 c
-            C5 =  1.0d0/90.0d0 
+            C5 =  1.0d0/90.0d0
             C1 = 13.5d0/9.0d0
             C2 = -5.4d0/(36.0d0 * uzero**4)
             C3 =  0.0d0
@@ -235,7 +235,7 @@ c
 c
 c square + rect + window + ladder + picture window
 c
-            C5 = 1.0d0/180.0d0 
+            C5 = 1.0d0/180.0d0
             C1 =       (19.0d0 - C5* 495.0d0)/9.0d0
             C2 =       ( 1.0d0 - C5* 576.0d0)/(36.0d0 * uzero**4)
             C3 = 16*(C5*90.0d0 - 1.0d0)/(45.0d0 * uzero**2)
@@ -282,16 +282,16 @@ c
 c+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c
       if (loops /= 6) then
-c     
+c
 c     Do the positive half of the (1x1) staple
 c                                                        _
 c                                                       | |
-c      
+c
          t1r = 0.0d0
          t1i = 0.0d0
          t2r = 0.0d0
          t2i = 0.0d0
-   
+
          if (quad == 1 .or. quad == 2 .or. quad == 5) then
 
             y1r = cshift(ur(:,:,:,:,yhat,:,:),dim=xhat,shift=1)
@@ -303,30 +303,30 @@ c
             linki = ui(:,:,:,:,yhat,:,:)
 
             call UUdag(t1r,t1i,y1r,y1i,x1r,x1i)
-   
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
-c       C1 which will serve to create an improved action  
+c       C1 which will serve to create an improved action
 c
             t1r = C1*t1r
             t1i = C1*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-               
+
             call UUdag(stapler,staplei,t1r,t1i,linkr,linki)
 
             if (report) then
-            
+
                testactionsq = 0.0d0
-               
+
                do ic=1,nc
                      do kc=1,nc
-               
-                        testactionsq(:,:,:,:) = testactionsq(:,:,:,:)  
-     &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic) 
+
+                        testactionsq(:,:,:,:) = testactionsq(:,:,:,:)
+     &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
-                    
+
                      end do
                   end do
 
@@ -339,16 +339,16 @@ c                  write(7,*)
 
                end if
 
-            end if              !closes the quad = 1,2,5 condition   
+            end if              !closes the quad = 1,2,5 condition
 c
 c-------------------------------------------------------------------------------------
 c
 c     Do negative half of the (1x1) staple
-c     
+c
 c                                                        |_|
- 
+
             if (quad == 3 .or. quad == 4 .or. quad ==5 ) then
-            
+
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:),dim=xhat,shift = 1),
      &                      dim=yhat, shift = -1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:),dim=xhat,shift = 1),
@@ -360,14 +360,14 @@ c                                                        |_|
                t1i = 0.0d0
 
                call UdagUdag(t1r,t1i,y1r,y1i,x1r,x1i)
-               
+
 c       Reassign a value to y1, to give the third link
-                     
-               y1r = cshift(ur(:,:,:,:,yhat,:,:), dim=yhat, shift = -1) 
+
+               y1r = cshift(ur(:,:,:,:,yhat,:,:), dim=yhat, shift = -1)
                y1i = cshift(ui(:,:,:,:,yhat,:,:), dim=yhat, shift = -1)
-                     
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
 c       C1 which will serve to create an improved action  
 c
@@ -377,16 +377,16 @@ c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UU(stapler,staplei,t1r,t1i,y1r,y1i)
-      
+
                testactionsq = 0.0d0
-               
+
                do ic=1,nc
                   do kc=1,nc
-               
-                     testactionsq(:,:,:,:)    = testactionsq(:,:,:,:)    
-     &                    + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic) 
+
+                     testactionsq(:,:,:,:)    = testactionsq(:,:,:,:)
+     &                    + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                    -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
-           
+
                   end do
                end do
 
@@ -414,16 +414,16 @@ c
          if (loops /= 1) then
 c
             x1r = cshift(ur(:,:,:,:,xhat,:,:),dim=xhat,shift=1)
-            x1i = cshift(ui(:,:,:,:,xhat,:,:),dim=xhat,shift=1) 
-   
-            y1r = cshift(ur(:,:,:,:,yhat,:,:),dim=yhat,shift=1) 
+            x1i = cshift(ui(:,:,:,:,xhat,:,:),dim=xhat,shift=1)
+
+            y1r = cshift(ur(:,:,:,:,yhat,:,:),dim=yhat,shift=1)
             y1i = cshift(ui(:,:,:,:,yhat,:,:),dim=yhat,shift=1)
-   
+
             x2r = 0.0d0
             x2i = 0.0d0
             y2r = 0.0d0
             y2i = 0.0d0
-   
+
             linkr(:,:,:,:,:,:) = ur(:,:,:,:,xhat,:,:)
             linki(:,:,:,:,:,:) = ui(:,:,:,:,xhat,:,:)
 
@@ -456,8 +456,8 @@ c  Now we reuse x1r and x1i and use y1 as a temporary variable
             if (quad == 1 .or. quad == 5) then
 
                y1r = cshift(y2r(:,:,:,:,:,:),dim=xhat,shift=2)
-               y1i = cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=2) 
-         
+               y1i = cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=2)
+
                call UU(t1r,t1i,x1r,x1i,y1r,y1i)
 
 c  Now we redefine x1 to use it as a temporary variable
@@ -480,16 +480,16 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                call UUdag(stapler,staplei,t2r,t2i,y2r,y2i)
 
                if (report) then
-             
+
                   testactionsq = 0.0d0
-     
+
                   do ic=1,nc
                      do kc=1,nc
-       
+
                         testactionsq(:,:,:,:) = testactionsq(:,:,:,:)
      &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
-         
+
                      end do
                   end do
 
@@ -510,7 +510,7 @@ c
 c                                                         _
 c                                                       |  |
 c                                                       |__|
-c                          
+c
             if (quad == 4 .or. quad == 5) then
 
                x1r = cshift(ur(:,:,:,:,xhat,:,:),dim=xhat,shift=1)
@@ -520,12 +520,12 @@ c
      &                      dim= yhat, shift=-2)  
                y1i = cshift(cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=2),
      &                      dim= yhat, shift=-2)
-           
+
                t1r = 0.0d0
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-             
+
                call UUdag(t1r,t1i,x1r,x1i,y1r,y1i)
 
                x1r = cshift(x2r(:,:,:,:,:,:),dim=yhat,shift=-2)
@@ -541,27 +541,27 @@ c
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-               call UUdag(t2r,t2i,t1r,t1i,x1r,x1i)                  
- 
+               call UUdag(t2r,t2i,t1r,t1i,x1r,x1i)
+
                y1r = cshift(y2r(:,:,:,:,:,:),dim=yhat,shift=-2)
                y1i = cshift(y2i(:,:,:,:,:,:),dim=yhat,shift=-2)
 
                call UU(stapler,staplei,t2r,t2i,y1r,y1i)
-        
+
                if (report) then
-    
+
                   testactionsq = 0.0d0
-    
+
                   do ic=1,nc
                      do kc=1,nc
-      
+
                         testactionsq(:,:,:,:)    = testactionsq(:,:,:,:)
      &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
-    
+
                      end do
-                  end do   
-     
+                  end do
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 2 x 2L loop, i , yhat'
@@ -570,7 +570,7 @@ c                  write(7,*) 'C2 =', C2
 c                  write(7,*)
 
                end if
-            end if			! closes the quad == 4,5 condition   
+            end if          ! closes the quad == 4,5 condition
 c
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
 c
@@ -578,23 +578,23 @@ c       Do the positive half of the (2x2) staple, update link at right
 c                                                        __
 c                                                       |  |
 c                                                       |_ |
-            if (quad == 2 .or. quad == 5 ) then 
+            if (quad == 2 .or. quad == 5 ) then
 
                t1r = 0.0d0
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-     
+
                y1r = cshift(y2r(:,:,:,:,:,:),dim=xhat,shift=1)
                y1i = cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=1)
-           
+
                x1r = cshift(cshift(x2r(:,:,:,:,:,:),dim=yhat,shift=2),
      &                      dim = xhat, shift = -1)
                x1i = cshift(cshift(x2i(:,:,:,:,:,:),dim=yhat,shift=2),
      &                      dim = xhat, shift = -1)
 
                call UUdag(t1r,t1i,y1r,y1i,x1r,x1i)
- 
+
                y1r = cshift(y2r(:,:,:,:,:,:),dim=xhat,shift=-1)
                y1i = cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=-1)
 c
@@ -623,11 +623,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                      do kc=1,nc
 
                         testactionsq(:,:,:,:) = testactionsq(:,:,:,:)
-     &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic) 
+     &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
-   
-                     end do   
-                  end do    
+
+                     end do
+                  end do
 
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
@@ -637,7 +637,7 @@ c                  write(7,*) 'C2 =', C2
 c                  write(7,*)
 
                end if
-            end if                      !closes the quad == 2,5 condition         
+            end if                      !closes the quad == 2,5 condition
 c
 c----------------------------------------------------------------------------------------------
 c
@@ -651,19 +651,19 @@ c                                                       |__|
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-                        
+
                y1r = cshift(cshift(y2r(:,:,:,:,:,:),dim=xhat,shift=1),
      &                      dim=yhat, shift=-2)
                y1i = cshift(cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=1),
-     &                      dim=yhat, shift=-2)               
-         
+     &                      dim=yhat, shift=-2)
+
                x1r = cshift(cshift(x2r(:,:,:,:,:,:),dim=yhat,shift=-2),
      &                      dim = xhat, shift = -1)
                x1i = cshift(cshift(x2i(:,:,:,:,:,:),dim=yhat,shift=-2),
      &                      dim = xhat, shift = -1)
 
                call UdagUdag(t1r,t1i,y1r,y1i,x1r,x1i)
-         
+
                y1r = cshift(cshift(y2r(:,:,:,:,:,:),dim=xhat,shift=-1),
      &                      dim=yhat, shift=-2)
                y1i = cshift(cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=-1),
@@ -680,26 +680,26 @@ c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UU(t2r,t2i,t1r,t1i,y1r,y1i)
-            
+
                x1r = cshift(ur(:,:,:,:,xhat,:,:),dim=xhat,shift=-1)
                x1i = cshift(ui(:,:,:,:,xhat,:,:),dim=xhat,shift=-1)
-                        
+
                call UU(stapler,staplei,t2r,t2i,x1r,x1i)
 
                if (report) then
-  
+
                   testactionsq = 0.0d0
-   
+
                   do ic=1,nc
                      do kc=1,nc
-       
+
                         testactionsq(:,:,:,:)    = testactionsq(:,:,:,:)
      &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
-    
+
                      end do
                   end do
-            
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 2 x 2R loop, i , yhat'
@@ -728,10 +728,10 @@ c
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-   
+
                x1r = cshift(ur(:,:,:,:,xhat,:,:),dim=yhat,shift=2)
                x1i = cshift(ui(:,:,:,:,xhat,:,:),dim=yhat,shift=2)
-    
+
                y1r = cshift(y2r(:,:,:,:,:,:),dim=xhat,shift=1)
                y1i = cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=1)
 
@@ -743,7 +743,7 @@ c       In the following multiplication we introduce a factor
 c       C3 which will serve to create an improved action
 c
                t1r = C3*t1r
-               t1i = C3*t1i        
+               t1i = C3*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -759,10 +759,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                         testactionsq(:,:,:,:) = testactionsq(:,:,:,:)
      &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
-     
+
                      end do
                   end do
-      
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 1 x 2 loop, i , yhat'
@@ -781,13 +781,13 @@ c                                                       | |
 c                                                       |_|
 
             if (quad == 3 .or. quad == 4 .or. quad == 5) then
-    
+
                t1r = 0.0d0
                t1i = 0.0d0
  
                x1r = cshift(ur(:,:,:,:,xhat,:,:),dim=yhat,shift=-2)
                x1i = cshift(ui(:,:,:,:,xhat,:,:),dim=yhat,shift=-2)
-                        
+
                y1r = cshift(cshift(y2r(:,:,:,:,:,:),dim=xhat,shift=1),
      &                      dim=yhat, shift=-2)
                y1i = cshift(cshift(y2i(:,:,:,:,:,:),dim=xhat,shift=1),
@@ -811,7 +811,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                call UU(stapler,staplei,t1r,t1i,y1r,y1i)
 
                if (report) then
- 
+
                   testactionsq = 0.0d0
 
                   do ic=1,nc
@@ -820,17 +820,17 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                         testactionsq(:,:,:,:) = testactionsq(:,:,:,:)
      &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
- 
+
                      end do
                   end do
-               
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 1 x 2 loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
 c                  write(7,*) 'C3 =', C3
 c                  write(7,*)
-                  
+
                end if
             end if                ! closes the quad == 3,4,5 condition
 
@@ -855,7 +855,7 @@ c                                                       | _|
                linkr(:,:,:,:,:,:) = ur(:,:,:,:,yhat,:,:)
                linki(:,:,:,:,:,:) = ui(:,:,:,:,yhat,:,:)
 
-               call UU(t1r,t1i,x1r,x1i,y1r,y1i)       
+               call UU(t1r,t1i,x1r,x1i,y1r,y1i)
 
                x1r = cshift(x2r(:,:,:,:,:,:),dim=yhat,shift =1)
                x1i = cshift(x2i(:,:,:,:,:,:),dim=yhat,shift =1)
@@ -886,8 +886,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
 
                      end do
-                  end do   
-     
+                  end do
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 2 x 1L loop, i , yhat'
@@ -905,31 +905,31 @@ c                                                       |__|
             if (quad == 4 .or. quad == 5) then
 
                t1r = 0.0d0
-               t1i = 0.0d0  
+               t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-                                        
+
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:),dim=xhat,shift=2),
      &                        dim=yhat, shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:),dim=xhat,shift=2),
      &                        dim=yhat, shift=-1)
-                        
+
                x1r = cshift(ur(:,:,:,:,xhat,:,:),dim=xhat,shift=1)
                x1i = cshift(ui(:,:,:,:,xhat,:,:),dim=xhat,shift=1)
 
-               call UUdag(t1r,t1i,x1r,x1i,y1r,y1i)          
+               call UUdag(t1r,t1i,x1r,x1i,y1r,y1i)
 
                x1r = cshift(x2r(:,:,:,:,:,:),dim=yhat,shift =-1)
                x1i = cshift(x2i(:,:,:,:,:,:),dim=yhat,shift =-1)  
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C3 which will serve to create an improved action
 c
                t1r = C3*t1r
                t1i = C3*t1i
-c       
+c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UUdag(t2r,t2i,t1r,t1i,x1r,x1i)
@@ -952,7 +952,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-        
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 2 x 1L loop, i , yhat'
@@ -974,10 +974,10 @@ c                                                       |_ |
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-      
+
                y1r = cshift(ur(:,:,:,:,yhat,:,:),dim=xhat,shift=1)
                y1i = cshift(ui(:,:,:,:,yhat,:,:),dim=xhat,shift=1)
-                
+
                x1r = cshift(cshift(x2r(:,:,:,:,:,:), dim=xhat, shift=-1),
      &                            dim = yhat, shift=1)
                x1i = cshift(cshift(x2i(:,:,:,:,:,:), dim=xhat, shift=-1),
@@ -989,13 +989,13 @@ c                                                       |_ |
                y1i = cshift(ui(:,:,:,:,yhat,:,:),dim=xhat,shift=-1)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C3 which will serve to create an improved action
 c
                t1r = C3*t1r
                t1i = C3*t1i
-c       
+c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UUdag(t2r,t2i,t1r,t1i,y1r,y1i)
@@ -1018,7 +1018,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-        
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 2 x 1R loop, i , yhat'
@@ -1028,19 +1028,19 @@ c                  write(7,*)
 
                end if
             end if                         ! closes the quad == 4,5 condition
-c   
+c
 c ---------------------------------------------------------------------
 c     Do negative half of the (2x1) staple, update link at right
-c                                                        _ 
+c                                                        _
 c                                                       |__|
-            
+
             if (quad == 3 .or. quad == 5) then
 
                t1r = 0.0d0
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-                        
+
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:),dim=xhat,shift=1),
      &                        dim=yhat,shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:),dim=xhat,shift=1),
@@ -1050,29 +1050,29 @@ c                                                       |__|
      &                           dim = yhat, shift=-1)
                x1i = cshift(cshift(x2i(:,:,:,:,:,:), dim=xhat, shift=-1),
      &                           dim = yhat, shift=-1)
-            
+
                call UdagUdag(t1r,t1i,y1r,y1i,x1r,x1i)
 
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:),dim=xhat,shift=-1),
      &                   dim=yhat,shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:),dim=xhat,shift=-1),
-     &                   dim=yhat,shift=-1)            
-        
+     &                   dim=yhat,shift=-1)
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C3 which will serve to create an improved action
 c
                t1r = C3*t1r
                t1i = C3*t1i
-c       
+c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UU(t2r,t2i,t1r,t1i,y1r,y1i)
-         
+
                x1r = cshift(ur(:,:,:,:,xhat,:,:),dim=xhat,shift=-1)
                x1i = cshift(ui(:,:,:,:,xhat,:,:),dim=xhat,shift=-1)
-         
+
                call UU(stapler,staplei,t2r,t2i,x1r,x1i)
 
                if (report) then
@@ -1088,7 +1088,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-        
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 2 x 1R loop, i , yhat'
@@ -1096,7 +1096,7 @@ c                  write(7,*) testactionsq(1,1,1,1),yhat
 c                  write(7,*) 'C3 =', C3
 c                  write(7,*)
 
-               end if        
+               end if
             end if                 ! closes the quad == 3,5 condition
          end if                    ! closes the 1x2 and 2x1 if block
 c
@@ -1149,9 +1149,9 @@ c                                                       | |
             if (quad == 1 .or. quad == 2 .or. quad == 5) then
 
                t1r = 0.0d0
-               t1i = 0.0d0  
+               t1i = 0.0d0
                t2r = 0.0d0
-               t2i = 0.0d0 
+               t2i = 0.0d0
 
                x1r = cshift(ur(:,:,:,:,xhat,:,:), dim=yhat, shift= 3)
                x1i = cshift(ui(:,:,:,:,xhat,:,:), dim=yhat, shift= 3)
@@ -1164,12 +1164,12 @@ c        Now we use y1 as a temporary variable, as before
                call UUdag(t1r,t1i,y1r,y1i,x1r,x1i)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t1r = C4*t1r
-               t1i = C4*t1i        
+               t1i = C4*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -1186,9 +1186,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &                       + ( ur(:,:,:,:,xhat,ic,kc) * stapler(:,:,:,:,kc,ic)
      &                       -   ui(:,:,:,:,xhat,ic,kc) * staplei(:,:,:,:,kc,ic) )
 
-                     end do   
-                  end do   
-         
+                     end do
+                  end do
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 1 x 3 loop, i , yhat'
@@ -1198,7 +1198,7 @@ c                  write(7,*)
 
                end if
             end if                     ! closes the quad == 1,2,5 condition    
-  
+
 c ----------------------------------------------------------------------
 c     Do negative half of the (1x3) staple
 c                                                       | |
@@ -1209,7 +1209,7 @@ c                                                       |_|
 
                t1r = 0.0d0
                t1i = 0.0d0
-                
+
                x1r = cshift(ur(:,:,:,:,xhat,:,:), dim=yhat, shift= -3)
                x1i = cshift(ui(:,:,:,:,xhat,:,:), dim=yhat, shift= -3)
 
@@ -1217,19 +1217,19 @@ c                                                       |_|
      &                        dim=yhat, shift=-3)
                y1i = cshift(cshift(y3i(:,:,:,:,:,:), dim=xhat, shift= 1),
      &                        dim=yhat, shift=-3)
-               
+
                call UdagUdag(t1r,t1i,y1r,y1i,x1r,x1i)
 
                y1r = cshift(y3r(:,:,:,:,:,:), dim=yhat, shift=-3)
                y1i = cshift(y3i(:,:,:,:,:,:), dim=yhat, shift=-3)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t1r = C4*t1r
-               t1i = C4*t1i        
+               t1i = C4*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -1248,7 +1248,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
 c                  write(7,*)  
 c                  write(7,*)'the testactionsq for negative 1 x 3 loop, i , yhat'
@@ -1288,12 +1288,12 @@ c        Now we use x1 as a temporary variable as above
                x1i = cshift(x3i(:,:,:,:,:,:), dim=yhat, shift= 1)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t2r = C4*t2r
-               t2i = C4*t2i        
+               t2i = C4*t2i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -1314,12 +1314,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-            
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 3 x 1L loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C4 =', C4         
+c                  write(7,*) 'C4 =', C4
 c                  write(7,*)
 
                end if
@@ -1336,34 +1336,34 @@ c                                                       |___|
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-        
+
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:), dim=xhat, shift= 3),
      &                        dim=yhat, shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:), dim=xhat, shift= 3),
      &                        dim=yhat, shift=-1)
-                
-               x1r = cshift(x2r(:,:,:,:,:,:), dim = xhat, shift=1)  
-               x1i = cshift(x2i(:,:,:,:,:,:), dim = xhat, shift=1)  
+
+               x1r = cshift(x2r(:,:,:,:,:,:), dim = xhat, shift=1)
+               x1i = cshift(x2i(:,:,:,:,:,:), dim = xhat, shift=1)
 
                call UUdag(t2r,t2i,x1r,x1i,y1r,y1i)
 
                x1r = cshift(x3r(:,:,:,:,:,:), dim=yhat, shift= -1)
                x1i = cshift(x3i(:,:,:,:,:,:), dim=yhat, shift= -1)
-         
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t2r = C4*t2r
-               t2i = C4*t2i        
+               t2i = C4*t2i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UUdag(t1r,t1i,t2r,t2i,x1r,x1i)
-                
-               y1r = cshift(ur(:,:,:,:,yhat,:,:), dim=yhat, shift=-1) 
-               y1i = cshift(ui(:,:,:,:,yhat,:,:), dim=yhat, shift=-1) 
+
+               y1r = cshift(ur(:,:,:,:,yhat,:,:), dim=yhat, shift=-1)
+               y1i = cshift(ui(:,:,:,:,yhat,:,:), dim=yhat, shift=-1)
 
                call UU(stapler,staplei,t1r,t1i,y1r,y1i)
 
@@ -1380,9 +1380,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 3 x 1L loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
 c                  write(7,*) 'C4 =', C4
@@ -1397,8 +1397,8 @@ c     Do positive half of the (3x1) staple, update link at middle
 c                                                        ___
 c                                                       |_ _|
             if (quad == 5) then
-   
-               t1r = 0.0d0  
+
+               t1r = 0.0d0
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
@@ -1417,22 +1417,22 @@ c                                                       |_ _|
      &                        dim=xhat, shift= -1)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t1r = C4*t1r
-               t1i = C4*t1i        
+               t1i = C4*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-               call UUdag(t2r,t2i,t1r,t1i,x1r,x1i)         
+               call UUdag(t2r,t2i,t1r,t1i,x1r,x1i)
 
                y1r = cshift(ur(:,:,:,:,yhat,:,:), dim=xhat, shift=-1)
                y1i = cshift(ui(:,:,:,:,yhat,:,:), dim=xhat, shift=-1)
- 
+
                t1r = 0.0d0
-               t1i = 0.0d0  
+               t1i = 0.0d0
 
                call UUdag(t1r,t1i,t2r,t2i,y1r,y1i)
 
@@ -1454,16 +1454,16 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 3 x 1M loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
 c                  write(7,*) 'C4 =', C4
 c                  write(7,*)
 
                end if
-           
+
 c ---------------------------------------------------------------------
 c     Do negative half of the (3x1) staple, update link at middle
 c                                                        _ _
@@ -1472,43 +1472,43 @@ c                                                       |___|
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-            
+
                x1r = cshift(ur(:,:,:,:,xhat,:,:), dim=xhat, shift= 1)
                x1i = cshift(ui(:,:,:,:,xhat,:,:), dim=xhat, shift= 1)
-               
+
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:), dim=xhat, shift= 2),
      &                   dim=yhat, shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:), dim=xhat, shift= 2),
-     &                   dim=yhat, shift=-1)        
+     &                   dim=yhat, shift=-1)
 
                call UUdag(t1r,t1i,x1r,x1i,y1r,y1i)
-      
+
                x1r = cshift(cshift(x3r(:,:,:,:,:,:), dim=yhat, shift=-1),
      &              dim=xhat, shift= -1)
                x1i = cshift(cshift(x3i(:,:,:,:,:,:), dim=yhat, shift=-1),
      &              dim=xhat, shift= -1)
-         
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t1r = C4*t1r
-               t1i = C4*t1i        
+               t1i = C4*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UUdag(t2r,t2i,t1r,t1i,x1r,x1i)
-                
+
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:), dim=xhat, shift= -1),
      &                   dim=yhat, shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:), dim=xhat, shift= -1),
      &                   dim=yhat, shift=-1)
-      
+
                t1r = 0.0d0
                t1i = 0.0d0  
 
-               call UU(t1r,t1i,t2r,t2i,y1r,y1i)              
+               call UU(t1r,t1i,t2r,t2i,y1r,y1i)
 
                x1r = cshift(ur(:,:,:,:,xhat,:,:), dim = xhat, shift = -1)
                x1i = cshift(ui(:,:,:,:,xhat,:,:), dim = xhat, shift = -1)
@@ -1528,9 +1528,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 3 x 1M loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
 c                  write(7,*) 'C4 =', C4
@@ -1550,7 +1550,7 @@ c                                                       |__ |
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-                         
+
                x1r = cshift(cshift(x3r(:,:,:,:,:,:), dim=yhat, shift=1),
      &              dim=xhat, shift= -2)
                x1i = cshift(cshift(x3i(:,:,:,:,:,:), dim=yhat, shift=1),
@@ -1563,23 +1563,23 @@ c                                                       |__ |
 
                y1r = cshift(ur(:,:,:,:,yhat,:,:), dim=xhat, shift=-2)
                y1i = cshift(ui(:,:,:,:,yhat,:,:), dim=xhat, shift=-2)
-        
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t1r = C4*t1r
-               t1i = C4*t1i        
+               t1i = C4*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UUdag(t2r,t2i,t1r,t1i,y1r,y1i)
-   
+
                x1r = cshift(x2r(:,:,:,:,:,:), dim = xhat, shift=-2)
                x1i = cshift(x2i(:,:,:,:,:,:), dim = xhat, shift=-2)
 
-               call UU(stapler,staplei,t2r,t2i,x1r,x1i)              
+               call UU(stapler,staplei,t2r,t2i,x1r,x1i)
 
                if (report) then
 
@@ -1594,9 +1594,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 3 x 1R loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
 c                  write(7,*) 'C4 =', C4
@@ -1615,7 +1615,7 @@ c                                                       |___|
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-                         
+
                x1r = cshift(cshift(x3r(:,:,:,:,:,:), dim=yhat, shift=-1),
      &              dim=xhat, shift= -2)
                x1i = cshift(cshift(x3i(:,:,:,:,:,:), dim=yhat, shift=-1),
@@ -1625,21 +1625,21 @@ c                                                       |___|
      &                   dim=yhat, shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:), dim=xhat, shift= 1),
      &                   dim=yhat, shift=-1)
-               
+
                call UdagUdag(t1r,t1i,y1r,y1i,x1r,x1i)
 
                y1r = cshift(cshift(ur(:,:,:,:,yhat,:,:), dim=xhat, shift= -2),
      &                   dim=yhat, shift=-1)
                y1i = cshift(cshift(ui(:,:,:,:,yhat,:,:), dim=xhat, shift= -2),
-     &                   dim=yhat, shift=-1)        
+     &                   dim=yhat, shift=-1)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c        
+c
 c       In the following multiplication we introduce a factor
 c       C4 which will serve to create an improved action
-c       
+c
                t1r = C4*t1r
-               t1i = C4*t1i        
+               t1i = C4*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -1647,7 +1647,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                x1r = cshift(x2r(:,:,:,:,:,:), dim = xhat, shift=-2)
                x1i = cshift(x2i(:,:,:,:,:,:), dim = xhat, shift=-2)
-                
+
                call UU(stapler,staplei,t2r,t2i,x1r,x1i)
 
                if (report) then
@@ -1663,12 +1663,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 3 x 1R loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C4 =', C4         
+c                  write(7,*) 'C4 =', C4
 c                  write(7,*)
 
                end if
@@ -1705,7 +1705,7 @@ c
                x1i = cshift(x3i(:,:,:,:,:,:), dim=yhat, shift= 3)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
 c       C5 which will serve to create an improved action  
 c
@@ -1716,7 +1716,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UUdag(t1r,t1i,t2r,t2i,x1r,x1i)
 
-               call UUdag(stapler,staplei,t1r,t1i,y3r,y3i)            
+               call UUdag(stapler,staplei,t1r,t1i,y3r,y3i)
 
                if (report) then
 
@@ -1731,12 +1731,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-                  
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 3 x 3L loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C5 =', C5         
+c                  write(7,*) 'C5 =', C5
 c                  write(7,*)
 
                end if
@@ -1750,7 +1750,7 @@ c                                                       |   |
 c                                                       |   |
 c                                                       |___|
             if (quad == 4 .or. quad == 5) then
-   
+
                t1r = 0.0d0
                t1i = 0.0d0
                t2r = 0.0d0
@@ -1770,9 +1770,9 @@ c                                                       |___|
                x1i = cshift(x3i(:,:,:,:,:,:), dim=yhat, shift= -3)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
-c       C5 which will serve to create an improved action  
+c       C5 which will serve to create an improved action
 c
                t2r = C5*t2r
                t2i = C5*t2i
@@ -1781,10 +1781,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                call UUdag(t1r,t1i,t2r,t2i,x1r,x1i)
 
-               y1r = cshift(y3r(:,:,:,:,:,:), dim=yhat, shift=-3) 
-               y1i = cshift(y3i(:,:,:,:,:,:), dim=yhat, shift=-3) 
+               y1r = cshift(y3r(:,:,:,:,:,:), dim=yhat, shift=-3)
+               y1i = cshift(y3i(:,:,:,:,:,:), dim=yhat, shift=-3)
 
-               call UU(stapler,staplei,t1r,t1i,y1r,y1i)       
+               call UU(stapler,staplei,t1r,t1i,y1r,y1i)
  
                if (report) then
 
@@ -1799,12 +1799,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 3 x 3L loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C5 =', C5         
+c                  write(7,*) 'C5 =', C5
 c                  write(7,*)
 
                end if
@@ -1818,11 +1818,11 @@ c                                                       |   |
 c                                                       |_ _|
             if (quad == 5) then
 
-               t1r = 0.0d0  
+               t1r = 0.0d0
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-         
+
                x1r = cshift(ur(:,:,:,:,xhat,:,:), dim=xhat, shift= 1)
                x1i = cshift(ui(:,:,:,:,xhat,:,:), dim=xhat, shift= 1)
 
@@ -1837,9 +1837,9 @@ c                                                       |_ _|
      &                 dim=xhat, shift= -1)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
-c       C5 which will serve to create an improved action  
+c       C5 which will serve to create an improved action
 c
                t1r = C5*t1r
                t1i = C5*t1i
@@ -1874,12 +1874,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 3 x 3M loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C5 =', C5         
+c                  write(7,*) 'C5 =', C5
 c                  write(7,*)
 
                end if
@@ -1911,9 +1911,9 @@ c                                                       |___|
      &                dim=xhat, shift= -1)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
-c       C5 which will serve to create an improved action  
+c       C5 which will serve to create an improved action
 c
                t1r = C5*t1r
                t1i = C5*t1i
@@ -1950,17 +1950,17 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 3 x 3M loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C5 =', C5         
+c                  write(7,*) 'C5 =', C5
 c                  write(7,*)
 
                end if
             end if                        ! closes the quad == 5 condition
-c   
+c
 c ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c     Do positive half of the (3x3) staple, update link at right
 c                                                        ___
@@ -1986,11 +1986,11 @@ c                                                       |__ |
 
                y1r = cshift(y3r(:,:,:,:,:,:), dim=xhat, shift=-2)
                y1i = cshift(y3i(:,:,:,:,:,:), dim=xhat, shift=-2)
-         
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
-c       C5 which will serve to create an improved action  
+c       C5 which will serve to create an improved action
 c
                t1r = C5*t1r
                t1i = C5*t1i
@@ -2002,7 +2002,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                x1r = cshift(x2r(:,:,:,:,:,:), dim = xhat, shift=-2)
                x1i = cshift(x2i(:,:,:,:,:,:), dim = xhat, shift=-2)
 
-               call UU(stapler,staplei,t2r,t2i,x1r,x1i)               
+               call UU(stapler,staplei,t2r,t2i,x1r,x1i)
 
                if (report) then
 
@@ -2017,12 +2017,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for positive 3 x 3R loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C5 =', C5         
+c                  write(7,*) 'C5 =', C5
 c                  write(7,*)
 
                end if
@@ -2040,7 +2040,7 @@ c                                                       |___|
                t1i = 0.0d0
                t2r = 0.0d0
                t2i = 0.0d0
-         
+
                x1r = cshift(cshift(x3r(:,:,:,:,:,:), dim=yhat, shift=-3),
      &                   dim=xhat, shift= -2)
                x1i = cshift(cshift(x3i(:,:,:,:,:,:), dim=yhat, shift=-3),
@@ -2057,14 +2057,14 @@ c                                                       |___|
      &                   dim=yhat, shift=-3) 
                y1i = cshift(cshift(y3i(:,:,:,:,:,:), dim=xhat, shift= -2),
      &                   dim=yhat, shift=-3)
-        
+
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c       
+c
 c       In the following multiplication we introduce a factor
-c       C5 which will serve to create an improved action  
+c       C5 which will serve to create an improved action
 c
                t1r = C5*t1r
-               t1i = C5*t1i        
+               t1i = C5*t1i
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -2072,7 +2072,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                x1r = cshift(x2r(:,:,:,:,:,:), dim = xhat, shift=-2)
                x1i = cshift(x2i(:,:,:,:,:,:), dim = xhat, shift=-2)
-                
+
                call UU(stapler,staplei,t2r,t2i,x1r,x1i)
 
                if (report) then
@@ -2088,12 +2088,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
                      end do
                   end do
-         
+
                   testactionsq = sum(testactionsq) / ( nx*ny*nz*nt )
-c                  write(7,*)  
+c                  write(7,*)
 c                  write(7,*)'the testactionsq for negative 3 x 3R loop, i , yhat'
 c                  write(7,*) testactionsq(1,1,1,1),yhat
-c                  write(7,*) 'C5 =', C5         
+c                  write(7,*) 'C5 =', C5
 c                  write(7,*)
 
                end if

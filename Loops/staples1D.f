@@ -155,7 +155,7 @@ c
             end do
          end if                 !closes the .true. if
       end do                    !closes the i=1,3 loop
-    
+
       return
 
       end subroutine staples1D

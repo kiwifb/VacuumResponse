@@ -1,8 +1,8 @@
 c
 c     local variables
 c
-      integer                                                 		:: it
-      integer                                                 		:: ic,jc,kc
+      integer                                                 :: it
+      integer                                                 :: ic,jc,kc
 c
 c     diagonal links
 c
@@ -24,50 +24,50 @@ c
 c
 c     bottom links (built up iteratively)
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: bllr,blli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: bllr,blli
 !HPF$ DISTRIBUTE bllr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE blli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: brlr,brli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: brlr,brli
 !HPF$ DISTRIBUTE brlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE brli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc,nL(that))  		:: tlr,tli
+      double precision,dimension(nx,ny,nz,nt,nc,nc,nL(that))  :: tlr,tli
 !HPF$ DISTRIBUTE tlr(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE tli(*,*,BLOCK,BLOCK,*,*,*)
 c
 c     shifted time links
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: t_tr,t_ti
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: t_tr,t_ti
 !HPF$ DISTRIBUTE t_tr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE t_ti(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)           		:: t_ur,t_ui
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: t_ur,t_ui
 !HPF$ DISTRIBUTE t_ur(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE t_ui(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)               :: t_dr,t_di
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: t_dr,t_di
 !HPF$ DISTRIBUTE t_dr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE t_di(*,*,BLOCK,BLOCK,*,*)
 c
 c     top links (time shifted bottom links)
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sbllr,sblli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: sbllr,sblli
 !HPF$ DISTRIBUTE sbllr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE sblli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sbrlr,sbrli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: sbrlr,sbrli
 !HPF$ DISTRIBUTE sbrlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE sbrli(*,*,BLOCK,BLOCK,*,*)
 c
 c     staples
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sllr,slli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: sllr,slli
 !HPF$ DISTRIBUTE sbllr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE sblli(*,*,BLOCK,BLOCK,*,*)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: srlr,srli
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: srlr,srli
 !HPF$ DISTRIBUTE sbrlr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE sbrli(*,*,BLOCK,BLOCK,*,*)
 c
 c     temporary arrays
 c
-      double precision,dimension(nx,ny,nz,nt)                           :: Res
+      double precision,dimension(nx,ny,nz,nt)                 :: Res
 !HPF$ DISTRIBUTE Res(*,*,BLOCK,BLOCK)
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: tmp1r,tmp1i
+      double precision,dimension(nx,ny,nz,nt,nc,nc)           :: tmp1r,tmp1i
 !HPF$ DISTRIBUTE tmp1r(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE tmp1i(*,*,BLOCK,BLOCK,*,*)

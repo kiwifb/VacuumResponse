@@ -24,7 +24,7 @@ c     global variables
 c
 #include"loopsize.f"
       integer                                                           :: xdir
-      double precision,dimension(nx,ny,nz,nt,mu,nc,nc)         	 	   :: ur,ui
+      double precision,dimension(nx,ny,nz,nt,mu,nc,nc)                  :: ur,ui
 !HPF$ DISTRIBUTE ur(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE ui(*,*,BLOCK,BLOCK,*,*,*)
 c

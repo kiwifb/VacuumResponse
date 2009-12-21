@@ -7,7 +7,7 @@ c     top leg ( 3,0)
 c
          call product(ur,ui,xdir,bxlr,bxli,4)
 
-         ustr = cshift(uptr,dim=xdir,shift=4) 
+         ustr = cshift(uptr,dim=xdir,shift=4)
          usti = cshift(upti,dim=xdir,shift=4)
 
          include 'topleg.f'

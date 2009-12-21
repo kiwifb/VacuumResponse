@@ -57,7 +57,7 @@ Dir  :=  epsilonIndex.o \
          topQandReconAction.o \
          lotsaLoops.o \
          fMuNu.o \
-			boxes.o
+	boxes.o
 
 BAR   :=  baryonParam.o
 #         /usr/pgi/src/sunmpi64.o
@@ -80,6 +80,8 @@ QQ    := qqbar/loops.o
 
 DLT   := Delta/loops.o
 
+UDLT   := UDelta/loops.o
+
 TEST  := Test/loops.o
 
 EXECS := VacuumRespY \
@@ -90,7 +92,8 @@ EXECS := VacuumRespY \
 	VacuumRespVY1 \
 	VacuumRespQQ \
 	VacuumRespDQ \
-	VacuumRespDLT
+	VacuumRespDLT \
+	VacuumRespUDLT
 
 TEXECS := VacuumRespTest
 
@@ -147,6 +150,11 @@ VacuumRespDLT :$(COMMON) $(BAR) $(Dir)
 	$(MAKE) -C Delta -f ../Templates/Makefile
 	$(FULLCOMMAND) -IDelta $(PREP) -c writeshape.f
 	$(FULLCOMMAND) -IDelta $(PREP) -o VacuumRespDLT $(FILES) $(COMMON) $(BAR) $(Dir) $(DLT) $(LINK)
+
+VacuumRespUDLT :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C UDelta -f ../Templates/Makefile
+	$(FULLCOMMAND) -IUDelta $(PREP) -c writeshape.f
+	$(FULLCOMMAND) -IUDelta $(PREP) -o VacuumRespUDLT $(FILES) $(COMMON) $(BAR) $(Dir) $(UDLT) $(LINK)
 
 test : $(COMMON) $(BAR) $(Dir)
 	$(MAKE) -C Test -f ../Templates/Makefile

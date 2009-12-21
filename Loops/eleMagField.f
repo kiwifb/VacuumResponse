@@ -16,10 +16,10 @@ c
 
 c     global variables
 
-      integer,parameter	                                      :: nc=3
-      integer,parameter	                                      :: mu=4
+      integer,parameter                                       :: nc=3
+      integer,parameter                                       :: mu=4
 
-      integer,parameter	                                      :: nf=6
+      integer,parameter                                       :: nf=6
 
       double precision,dimension(nx,ny,nz,nt,nc,nc,nf)        :: Fr,Fi
 !HPF$ DISTRIBUTE Fr(*,*,BLOCK,BLOCK,*,*,*)
@@ -32,7 +32,7 @@ c     global variables
 c     local variables
 
       double precision                                        :: pi
-      integer	                                              :: ic,kc,i,j
+      integer                                                 :: ic,kc,i,j
       integer,dimension(2:mu,1:mu-1)                          :: Findex
 !HPF$ DISTRIBUTE Findex(*,*)
 
@@ -58,12 +58,12 @@ c
          do j =1,i-1
 
             Findex(i,j) = (i+j) - 3 * ( (i-j) / 3 ) - 1
-            
+
          end do
       end do
 
       ele = 0.0d0
-      
+
       do ic=1,nc
          do kc=1,nc
 
@@ -79,10 +79,10 @@ c
       end do
 
       mag = 0.0d0
-      
+
       do ic=1,nc
          do kc=1,nc
-         
+
             mag(:,:,:,:) = mag(:,:,:,:) +
      &           ( Fr(:,:,:,:,ic,kc,Findex(3,2)) * Fr(:,:,:,:,kc,ic,Findex(3,2)) +
      &             Fr(:,:,:,:,ic,kc,Findex(3,1)) * Fr(:,:,:,:,kc,ic,Findex(3,1)) +
@@ -90,7 +90,7 @@ c
      &             Fi(:,:,:,:,ic,kc,Findex(3,2)) * Fi(:,:,:,:,kc,ic,Findex(3,2)) -
      &             Fi(:,:,:,:,ic,kc,Findex(3,1)) * Fi(:,:,:,:,kc,ic,Findex(3,1)) -
      &             Fi(:,:,:,:,ic,kc,Findex(2,1)) * Fi(:,:,:,:,kc,ic,Findex(2,1)) )
-              
+
          end do
       end do
 c
@@ -100,7 +100,7 @@ c
       mag = mag / ( nc )
 
       return
-      
+
       end subroutine EleMagField
 
       END MODULE L_EleMagField
