@@ -6,11 +6,7 @@ INCLUDE   = -I../ -I../../GSnew
 
 .SUFFIXES: .f .o
 .f.o:
-	$(COMPILER) $(INCLUDE) $(PREP) $(CFLAGS) $(OPT) -c $<
-
-.SUFFIXES: .f90 .o
-.f90.o:
-	$(COMPILER) $(INCLUDE) $(PREP) $(CFLAGS) $(OPT) -c $<
+	$(COMPILER) $(INCLUDE) $(PREP) $(CFLAGS) $(OPT) -ffree-form -c $<
 
 OBJ   = loops.o
 

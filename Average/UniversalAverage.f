@@ -42,13 +42,17 @@ c  v.3.4.0 FB071108 Restoring changes lost when importing from double-helix. To 
 c           this problem in the future the code is now in its own top level directory.
 c           Inclusion of a new shape and renaming of some old shapes for consistancy.
 c           Changes to the Makefiles to cope with the change of directory.
-c  v.3.4.1 FB091127 Take into account the changes to the number of delta shape loops.
-c	   vtk output start.
+c  v.3.4.1 FB071218 VY and VY1 shapes have now been fully incorporated.
+c  v.3.5.0 FB080804 Working on incrporating the computation of the expulsion
+c  v.3.5.1 FB091127 Take into account the changes to the number of delta shape loops.
+c          vtk output start.
+c  v.3.6.0 FB100526 Add 4P shapes
 c
       program UniversalAverage
 c
       USE L_baryonParam
       USE L_WRITEAVG
+      USE A_TRAPEZE
 c
       IMPLICIT NONE
 c
@@ -61,7 +65,7 @@ c     integer,parameter                                       :: maxsize=9
       integer                                                 :: start, finish, icon, Correlate
       integer                                                 :: iiy,offset,Tee,icon2
       integer                                                 :: ix,iy,iz,sx,sy
-      integer                                                 :: shpe,zero
+      integer                                                 :: shpe,zero,bl
       integer                                                 :: pot,dx,nodex,nodey,xerr,vtk
       character(len=80)                                       :: configName, suffixName, reportName
       character(len=132)                                      :: thisConfig,dxname
@@ -103,6 +107,10 @@ c
       integer,dimension(maxsize)                              :: shx
       integer,dimension(nL(that),maxsize)                     :: exept
       integer,dimension(nL(that),maxsize,200)                 :: flag
+      integer                                                 :: expuls
+      double precision,dimension(0:maxsize,nL(that),200)      :: Cexpuls
+      double precision,dimension(0:maxsize,nL(that))          :: VExp,VExpErr
+      double precision                                        :: tmpExpuls
 c
 c  Begin execution
 c
@@ -128,11 +136,14 @@ c
       write(*,'(a)') 'Are we dealing with:'
       write(*,'(a)') '1) Y shape'
       write(*,'(a)') '2) TY shape'
-      write(*,'(a)') '3) LY shape'
-      write(*,'(a)') '4) L shape'
-      write(*,'(a)') '5) DQ2 shape'
-      write(*,'(a)') '6) DQ4 shape'
-      write(*,'(a)') '7) QQbar shape'
+      write(*,'(a)') '3) VY shape'
+      write(*,'(a)') '4) VY1 shape'
+      write(*,'(a)') '5) L shape'
+      write(*,'(a)') '6) DQ2 shape'
+      write(*,'(a)') '7) DQ4 shape'
+      write(*,'(a)') '8) QQbar shape'
+      write(*,'(a)') '9) DLT shape'
+      write(*,'(a)') '10) 4P shape'
       write(*,'(a)') 'results?'
       read (*,*) shpe
 c
@@ -141,15 +152,21 @@ c
       write(*,'(a)') 'What is the lattice spacing in fermi? (1 if you do not know)'
       read (*,*) lsize
 c
+c  Loops are recorded from bl to nloop. In most case bl=0 but in 4P case bl=1
+c
+      bl=0
+c
 c  --------------
 c  average distance to the Fermat point (rs)
 c  average quark separation (dqq)
 c  --------------
 c
       select case (shpe)
-      case(:2)
+      case(:2,9)
 
-         nloop = 9
+         if(shpe == 9) then nloop = 7
+         else nloop = 9
+         endif
 
          rs(1) = 1.24402 * lsize
          rs(2) = 2.15470 * lsize
@@ -171,7 +188,7 @@ c
          dqq(8) = 13.9283 * lsize
          dqq(9) = 16.0830 * lsize
 
-      case(3)
+      case(3:4)
 
          nloop = 5
 
@@ -180,24 +197,14 @@ c
          rs(3) = 2.48803 * lsize
          rs(4) = 3.39872 * lsize
          rs(5) = 7.13077 * lsize
-c         rs(5) = 4.64273 * lsize
-c         rs(6) = 5.88675 * lsize
-c         rs(7) = 7.13077 * lsize
-c         rs(8) = 8.04145 * lsize
-c         rs(9) = 9.28547 * lsize
 
          dqq(1) = 2.15738 * lsize
          dqq(2) = 3.73703 * lsize
          dqq(3) = 4.31476 * lsize
          dqq(4) = 5.88730 * lsize
          dqq(5) = 12.3533 * lsize
-c         dqq(5) = 8.04151 * lsize
-c         dqq(6) = 10.1971 * lsize
-c         dqq(7) = 12.3533 * lsize
-c         dqq(8) = 13.9283 * lsize
-c         dqq(9) = 16.0830 * lsize
 
-      case (4)
+      case (5)
 
          nloop = 11
 
@@ -208,7 +215,7 @@ c         dqq(9) = 16.0830 * lsize
 
          end do
 
-      case (5)
+      case (6)
 
          nloop = 12
 
@@ -219,7 +226,7 @@ c         dqq(9) = 16.0830 * lsize
 
          end do
 
-      case (6)
+      case (7)
 
          nloop = 12
 
@@ -230,13 +237,25 @@ c         dqq(9) = 16.0830 * lsize
 
          end do
 
-      case (7)
+      case (8)
 
          nloop = 12
 
             do iiy = 1, nloop
 
                rs(iiy) = iiy*lsize
+               dqq(iiy) = rs(iiy)
+
+            end do
+
+      case (10)
+
+         nloop = 6
+         bl = 1
+
+            do iiy = 1, nloop
+
+               rs(iiy) = 4*iiy*lsize
                dqq(iiy) = rs(iiy)
 
             end do
@@ -282,7 +301,10 @@ c
       write(*,'(a)') 'Do you want a baseline output to measure the size of the flux tube  (yes=1 no=0)?'
       read (*,*) nodey
 c
-      if( (pot+xerr+dx++vtk+nodex+nodey) == 0 ) then
+      write(*,'(a)') 'Do you want a report on the expulsion (yes=1 no=0)?'
+      read (*,*) expuls
+c
+      if( (pot+xerr+dx+nodex+nodey+expuls+vtk) == 0 ) then
          write(*,'(a)') 'are you averaging by part (yes=1 no=0)?'
          read (*,*) zero
       else
@@ -301,6 +323,8 @@ c
       avgActionA   = 0.0d0
       avgTopChgA   = 0.0d0
       WavgG        = 0.0d0
+
+      Cexpuls      = 0.0d0
 c
 c Initialiaze file strings and dialogue strings
 c
@@ -335,29 +359,45 @@ c
             write(reportName,fmt='(2a)') trim(reportName),'.TY'
          end if
       case (3)
-         write(suffixName,fmt='(2a)') trim(suffixName),'.LYavg4'
+         write(suffixName,fmt='(2a)') trim(suffixName),'.VYavg4'
          if(zero == 0) then
-            write(reportName,fmt='(2a)') trim(reportName),'.LY'
+            write(reportName,fmt='(2a)') trim(reportName),'.VY'
          end if
+
       case (4)
+         write(suffixName,fmt='(2a)') trim(suffixName),'.VY1avg4'
+         if(zero == 0) then
+            write(reportName,fmt='(2a)') trim(reportName),'.VY1'
+         end if
+      case (5)
          write(suffixName,fmt='(2a)') trim(suffixName),'.Lavg8'
          if(zero == 0) then
             write(reportName,fmt='(2a)') trim(reportName),'.L'
          end if
-      case (5)
+      case (6)
          write(suffixName,fmt='(2a)') trim(suffixName),'.DQ2avg4'
          if(zero == 0) then
             write(reportName,fmt='(2a)') trim(reportName),'.DQ2'
          end if
-      case (6)
+      case (7)
          write(suffixName,fmt='(2a)') trim(suffixName),'.DQ4avg4'
          if(zero == 0) then
             write(reportName,fmt='(2a)') trim(reportName),'.DQ4'
          end if
-      case (7)
+      case (8)
          write(suffixName,fmt='(2a)') trim(suffixName),'.QQ'
          if(zero == 0) then
             write(reportName,fmt='(2a)') trim(reportName),'.QQ'
+         end if
+      case (9)
+         write(suffixName,fmt='(2a)') trim(suffixName),'.DLTavg4'
+         if(zero == 0) then
+            write(reportName,fmt='(2a)') trim(reportName),'.DLTavg4'
+         end if
+      case (10)
+         write(suffixName,fmt='(2a)') trim(suffixName),'.4P'
+         if(zero == 0) then
+            write(reportName,fmt='(2a)') trim(reportName),'.4P'
          end if
       end select
 c
@@ -384,10 +424,10 @@ c  ----------
 c
 c   avg4/avg8
 c
-         read(11) actionC(:,:,:,0:nloop,:,:)
-         read(11) Wavg(0:nloop,:), avgAction(:,:)
-         read(12) topChgC(:,:,:,0:nloop,:,:)
-         read(12) Wavg(0:nloop,:), avgTopChg(:,:)
+         read(11) actionC(:,:,:,bl:nloop,:,:)
+         read(11) Wavg(bl:nloop,:), avgAction(:,:)
+         read(12) topChgC(:,:,:,bl:nloop,:,:)
+         read(12) Wavg(bl:nloop,:), avgTopChg(:,:)
 c
          ActionA    = ActionA    + ActionC
          topChgA    = topChgA    + topChgC
@@ -398,11 +438,40 @@ c
          close(11)
          close(12)
 c
+c  --------------
+c  Computing the correlated action for the expulsion calculation
+c  --------------
+c
+         if(expuls == 1) then
+
+            do Tee = 2,nL(that)
+c  Only offset = 1 for now
+               offset = 1
+c
+               do iiy = 1, nloop
+c  1-C for the expulsion amount
+                  CAction(:,:,:,iiy,Tee,offset) = 1.0d0 -
+     &                 actionC(:,:,:,iiy,Tee,offset) / (Wavg(iiy,Tee) * avgAction(Tee,offset))
+c
+               tmpExpuls = trapeze3D(CAction(:,:,:,iiy,Tee,offset),ny,nz,nt)/(ny*nz*nt)
+               do icon2 = start, finish
+
+                  if(icon2 /= icon) then
+                     Cexpuls(iiy,Tee,icon2) = Cexpuls(iiy,Tee,icon2) + tmpExpuls
+                  end if
+
+               end do
+
+               end do
+            end do
+
+         endif
+c
 c----------------------------------------
 c potential computations
 c----------------------------------------
 c
-         if((pot == 1).or.(xerr == 1)) then
+         if(pot == 1) then
 
             do icon2 = start, finish
 
@@ -427,7 +496,7 @@ c
       avgTopChgA    = avgTopChgA / (finish - start + 1 )
 
 
-      if((pot == 1).or.(xerr == 1)) then
+      if(pot == 1) then
          WavgG      = WavgG      / (finish - start)
       end if
 
@@ -467,8 +536,8 @@ c
                write(thisConfig,fmt='(a,i3.3,a)') trim(configName),icon,trim(suffixName)
                open (11,file=trim(thisConfig)//trim(fstr1)//'.correl.unf',status='old',form='unformatted')
 
-               read(11) actionC(:,:,:,0:nloop,:,:)
-               read(11) Wavg(0:nloop,:), avgAction(:,:)
+               read(11) actionC(:,:,:,bl:nloop,:,:)
+               read(11) Wavg(bl:nloop,:), avgAction(:,:)
 
                close(11)
 
@@ -500,7 +569,7 @@ c  --------------------------------
 c
 c  L shape
 c
-         if(shpe == 4) then
+         if(shpe == 5) then
 
             do iiy = 1,nloop
 
@@ -534,7 +603,7 @@ c
 c
 c  DQ shapes && QQbar shape
 c
-         if((shpe.eq.5).or.(shpe.eq.6).or.(shpe.eq.7)) then
+         if((shpe.eq.6).or.(shpe.eq.7).or.(shpe.eq.8)) then
 
             do iiy = 1,nloop
 
@@ -791,6 +860,46 @@ c
 
          end if
 c
+c----------------------------------
+c Expulsion computations
+c----------------------------------
+c
+         if(expuls == 1) then
+
+            do iiy = 1, nloop
+               do Tee = 1, nL(that) - 1
+
+                  VExp(iiy,Tee) = sum(Cexpuls(iiy,Tee,start:finish)) /(finish - start +1)
+
+                  VExpErr(iiy,Tee) = sqrt(
+     &                    ((sum((Cexpuls(iiy,Tee,start:finish)-VExp(iiy,Tee))**2))/
+     &                    (finish - start +1))*(finish - start))
+
+               end do
+            end do
+c
+c----------------------------------
+c record Expulsion results
+c----------------------------------
+c
+            write(suffixName,fmt='(a)') '.expulsion.dat'
+
+            do Tee = 1, nL(that) - 1
+
+               write(thisconfig,fmt='(3a,i2.2,a)') 'Pot/',trim(reportName),'-Tee',Tee,trim(suffixName)
+
+               open (11,file=trim(thisconfig),status='unknown',form='formatted')
+c
+               do iiy = 1, nloop
+                  write (11,*) iiy,VExp(iiy,Tee),VExpErr(iiy,Tee)
+               end do
+
+               close(11)
+
+            end do
+
+         end if
+c
 c  --------------
 c  record results
 c  --------------
@@ -887,10 +996,10 @@ c
                   call fmt_writeavg(12,CTopChg(:,:,:,iiy,Tee,offset))
 c
                   if(vtk == 1) then
-                    write(14,'(3(a,i),a)')'SCALARS action - shape ',iiy,' Tee=',Tee,' offset=',offset,' float'
+                    write(14,'(3(a,i),a)')'SCALARS action_shape_',iiy,'-Tee_',Tee,'-offset_',offset,' float'
                     write(14,'(a)')     'LOOKUP_TABLE default'
 
-                    write(15,'(3(a,i),a)')'SCALARS Topological Charge - shape ',iiy,' Tee=',Tee,' offset=',offset,' float'
+                    write(15,'(3(a,i),a)')'SCALARS TopologicalCharge_shape_',iiy,'-Tee_',Tee,'-offset_',offset,' float'
                     write(15,'(a)')     'LOOKUP_TABLE default'
 
                     do ix = 0, nt-1
@@ -907,6 +1016,7 @@ c
                     call fmt_writeavg(14,dxac(:,:,:))
                     call fmt_writeavg(15,dxtc(:,:,:))
                   end if
+c
                enddo               ! end iiy loop
 c
             enddo                  ! end offset loop

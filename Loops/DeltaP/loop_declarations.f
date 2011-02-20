@@ -1,20 +1,26 @@
 c
 c     local variables
 c
-      integer                                                           :: it
-      integer                                                           :: ic,jc,kc
+      integer                                                 :: it
+      integer                                                 :: ic,jc,kc
 c
-c	building links
+c     diagonal links
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: dxlr,dxli
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: cylr,cyli
-      double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: dylr,dyli
-!HPF$ DISTRIBUTE dxlr(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE dxli(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE cylr(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE cyli(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE dylr(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE dyli(*,*,BLOCK,BLOCK,*,*)
+      double precision,dimension(nx,ny,nz,nt,nc,nc)            :: up1x1r,up1x1i,do1x1r,do1x1i
+!HPF$ DISTRIBUTE up1x1r(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE up1x1i(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE do1x1r(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE do1x1i(*,*,BLOCK,BLOCK,*,*)
+      double precision,dimension(nx,ny,nz,nt,nc,nc)            :: up2x1r,up2x1i,do2x1r,do2x1i
+!HPF$ DISTRIBUTE up2x1r(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE up2x1i(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE do2x1r(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE do2x1i(*,*,BLOCK,BLOCK,*,*)
+      double precision,dimension(nx,ny,nz,nt,nc,nc)            :: up3x2r,up3x2i,do3x2r,do3x2i
+!HPF$ DISTRIBUTE up3x2r(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE up3x2i(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE do3x2r(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE do3x2i(*,*,BLOCK,BLOCK,*,*)
 c
 c     bottom links (built up iteratively)
 c
@@ -33,7 +39,7 @@ c
 c
 c     time links table
 c
-      double precision,dimension(nx,ny,nz,nt,nc,nc,nL(that))      :: tlr,tli
+      double precision,dimension(nx,ny,nz,nt,nc,nc,nL(that))  :: tlr,tli
 !HPF$ DISTRIBUTE tlr(*,*,BLOCK,BLOCK,*,*,*)
 !HPF$ DISTRIBUTE tli(*,*,BLOCK,BLOCK,*,*,*)
 c

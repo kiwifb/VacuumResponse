@@ -49,17 +49,17 @@ c
 !HPF$ DISTRIBUTE sbllr(*,*,BLOCK,BLOCK,*,*)
 !HPF$ DISTRIBUTE sblli(*,*,BLOCK,BLOCK,*,*)
       double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sbxlr,sbxli
-!HPF$ DISTRIBUTE sbrlr(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE sbrli(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE sbxlr(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE sbxli(*,*,BLOCK,BLOCK,*,*)
 c
 c     staples
 c
       double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sllr,slli
-!HPF$ DISTRIBUTE sbllr(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE sblli(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE sllr(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE slli(*,*,BLOCK,BLOCK,*,*)
       double precision,dimension(nx,ny,nz,nt,nc,nc)                     :: sxlr,sxli
-!HPF$ DISTRIBUTE sbrlr(*,*,BLOCK,BLOCK,*,*)
-!HPF$ DISTRIBUTE sbrli(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE sxlr(*,*,BLOCK,BLOCK,*,*)
+!HPF$ DISTRIBUTE sxli(*,*,BLOCK,BLOCK,*,*)
 c
 c     temporary arrays
 c

@@ -1,53 +1,11 @@
 c
-c  A program to average the results from VacuumRespY-plan
-c  Adapted from AverageY
+c  A program to average the results for 4 quarks wilson loops
+c  Branched from UniversalAverage on 20100513
+c  The main difference is that some loops are 2 dimensional.
 c
-c  v.1.01 AK040622
-c  v.1.02 FB040624 converted DOS-MAC to unix line end
-c  v.1.03 FB040624 corrected and improved conversion various check
-c  v.1.04 FB040625 the bugsquashing sessions
-c  v.1.1  FB041201 Accept both Y and TY shapes and writes correct filenames
-c  v.1.2  FB050209 Modified to accept (T)Yavg4 and extract WL at the same time
-c         or perform potential analisys from potential.f
-c  v.1.3  FB050223 Modified to allow "averaging by part"
-c  v.2.0  FB050322 Make the potential analyses a Jack-knife one.
-c  v.2.0a FB050323 Corrected _the_one_bug_ I found from the previous day modifications
-c                  Correction may trigger cleanup later on.
-c  v.2.1  FB050415 Various corrections since last version bump.
-c                  Split in a legacy version (2.0a) and the new version
-c                  dropping old stuff. This program can now deal with
-c                  Y, TY and LY loops. It also can spit out some DX output
-c                  but it is limited to avg# kind of data.
-c  v.2.2  FB050520 Finalized centering of LY shapes and DX output.
-c  v.2.3  FB050808 Corrected enormous bug in the potential code. It was
-c                  harmless if you had 200 configurations.
-c  v.2.4  FB051028 Added an output option for measuring the radius of the node.
-c  v.3.0  FB060314 Adding support for computing errors on each points of the lattice-
-c                  Cleaning variable names as well.
-c  v.3.0a FB060317 Cleanning and adjusting all the code modifications.
-c  v.3.0.9 FB060727 Adding support for the new "DiQuark" configuration.
-c  v.3.1.0 FB060727 Finished support for DiQuark configurations. Rebuilt the
-c                    change lost by importing the doublehelix tree from the JK
-c                    fork. Some cleaning and restructuring.
-c  v.3.2.0 FB061009 Added QQbar support.
-c  v.3.2.1 FB061123 Properly center topological charge + correcting various blunders.
-c                    that didn't affect the "action" results.
-c  v.3.3.0 FB061218 Now ask for the lattice spacing instead of assuming a value of 0.123fm
-c  v.3.3.1 FB061227 Now record potential for all Tee in the same file.
-c  v.3.3.2 FB070103 Added some complicated rule to compute the potential to deal with the case
-c           where in some configuration an average action change sign.
-c  v.3.3.3 FB070518 Major mistake in the value of d_qq for Y and TY shapes, as pointed out,
-c           by the referee corrected
-c  v.3.4.0 FB071108 Restoring changes lost when importing from double-helix. To avoid
-c           this problem in the future the code is now in its own top level directory.
-c           Inclusion of a new shape and renaming of some old shapes for consistancy.
-c           Changes to the Makefiles to cope with the change of directory.
-c  v.3.4.1 FB071218 VY and VY1 shapes have now been fully incorporated.
-c  v.3.5.0 FB080804 Working on incrporating the computation of the expulsion
-c  v.3.5.1 FB091127 Take into account the changes to the number of delta shape loops.
-c          vtk output start.
+c  v.0.1  FB20100513 Initial work on this incarnation of the program.
 c
-      program UniversalAverage
+      program Average4P
 c
       USE L_baryonParam
       USE L_WRITEAVG
@@ -56,13 +14,14 @@ c
       IMPLICIT NONE
 c
 c     for s16t32
-      integer,parameter                                       :: maxsize=12
+      integer,parameter                                       :: mxsize=12
+      integer,parameter                                       :: mysize=6
 c     for s12t24:
 c     integer,parameter                                       :: maxsize=9
-      integer                                                 :: nloop
+      integer                                                 :: nlx,nly
       integer,parameter                                       :: offmax=4
       integer                                                 :: start, finish, icon, Correlate
-      integer                                                 :: iiy,offset,Tee,icon2
+      integer                                                 :: ilx,ily,offset,Tee,icon2
       integer                                                 :: ix,iy,iz,sx,sy
       integer                                                 :: shpe,zero
       integer                                                 :: pot,dx,nodex,nodey,xerr,vtk
@@ -83,32 +42,32 @@ c
 !HPF$ DISTRIBUTE avgActionA(BLOCK,BLOCK)
 !HPF$ DISTRIBUTE avgTopChgA(BLOCK,BLOCK)
 c
-      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,0:maxsize,nL(that),offmax)   :: actionC
-!HPF$ DISTRIBUTE actionC(*,BLOCK,BLOCK,*,*,*)
-      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,0:maxsize,nL(that),offmax)   :: topChgC
-!HPF$ DISTRIBUTE topChgC(*,BLOCK,BLOCK,*,*,*)
-      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,0:maxsize,nL(that),offmax)   :: actionA
-!HPF$ DISTRIBUTE actionA(*,BLOCK,BLOCK,*,*,*)
-      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,0:maxsize,nL(that),offmax)   :: topChgA
-!HPF$ DISTRIBUTE topChgA(*,BLOCK,BLOCK,*,*,*)
-      double precision,dimension(0:maxsize,nL(that))          :: Wavg
-!HPF$ DISTRIBUTE Wavg(BLOCK,BLOCK)
-      double precision,dimension(0:maxsize,nL(that))          :: WavgA
-!HPF$ DISTRIBUTE WavgA(BLOCK,BLOCK)
-      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,0:maxsize,nL(that),offmax)   :: CAction
-      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,0:maxsize,nL(that),offmax)   :: CTopChg
-      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,0:maxsize,nL(that),offmax) :: ErrCAction
-      double precision,dimension(0:maxsize,nL(that),200)      :: WavgG,Vi
-      double precision,dimension(0:maxsize,nL(that)-1)        :: V0,Vb,Vberr
-      double precision,dimension(maxsize)                     :: rs, dqq
+      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,1:mxsize,1:mysize,nL(that),offmax)   :: actionC
+!HPF$ DISTRIBUTE actionC(*,BLOCK,BLOCK,*,*,*,*)
+      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,1:mxsize,1:mysize,nL(that),offmax)   :: topChgC
+!HPF$ DISTRIBUTE topChgC(*,BLOCK,BLOCK,*,*,*,*)
+      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,1:mxsize,1:mysize,nL(that),offmax)   :: actionA
+!HPF$ DISTRIBUTE actionA(*,BLOCK,BLOCK,*,*,*,*)
+      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,1:mxsize,1:mysize,nL(that),offmax)   :: topChgA
+!HPF$ DISTRIBUTE topChgA(*,BLOCK,BLOCK,*,*,*,*)
+      double precision,dimension(1:mxsize,1:mysize,nL(that))          :: Wavg
+!HPF$ DISTRIBUTE Wavg(*,BLOCK,BLOCK)
+      double precision,dimension(1:mxsize,1:mysize,nL(that))          :: WavgA
+!HPF$ DISTRIBUTE WavgA(*,BLOCK,BLOCK)
+      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,1:mxsize,1:mysize,nL(that),offmax)   :: CAction
+      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,1:mxsize,1:mysize,nL(that),offmax)   :: CTopChg
+      double precision,dimension(0:ny-1,0:nz-1,0:nt-1,1:mxsize,1:mysize,nL(that),offmax) :: ErrCAction
+      double precision,dimension(1:mxsize,1:mysize,nL(that),200)      :: WavgG,Vi
+      double precision,dimension(1:mxsize,1:mysize,nL(that)-1)        :: V0,Vb,Vberr
+      double precision,dimension(1:mxsize,1:mysize)                     :: rs, dqq
       double precision                                        :: lsize
       double precision,dimension(0:nt-1,0:nz-1,0:ny-1)        :: dxac,dxtc
-      integer,dimension(maxsize)                              :: shx
-      integer,dimension(nL(that),maxsize)                     :: exept
-      integer,dimension(nL(that),maxsize,200)                 :: flag
+      integer,dimension(1:mxsize,1:mysize)                              :: shx
+      integer,dimension(nL(that),1:mxsize,1:mysize)                     :: exept
+      integer,dimension(nL(that),1:mxsize,1:mysize,200)                 :: flag
       integer                                                 :: expuls
-      double precision,dimension(0:maxsize,nL(that),200)      :: Cexpuls
-      double precision,dimension(0:maxsize,nL(that))          :: VExp,VExpErr
+      double precision,dimension(1:mxsize,1:mysize,nL(that),200)      :: Cexpuls
+      double precision,dimension(1:mxsize,1:mysize,nL(that))          :: VExp,VExpErr
       double precision                                        :: tmpExpuls
 c
 c  Begin execution
@@ -133,15 +92,9 @@ c
       read (*,'(a80)') suffixName
 c
       write(*,'(a)') 'Are we dealing with:'
-      write(*,'(a)') '1) Y shape'
-      write(*,'(a)') '2) TY shape'
-      write(*,'(a)') '3) VY shape'
-      write(*,'(a)') '4) VY1 shape'
-      write(*,'(a)') '5) L shape'
-      write(*,'(a)') '6) DQ2 shape'
-      write(*,'(a)') '7) DQ4 shape'
-      write(*,'(a)') '8) QQbar shape'
-      write(*,'(a)') '9) DLT shape'
+      write(*,'(a)') '1) DDQ-PL shape'
+      write(*,'(a)') '2) DDQ-OP shape'
+      write(*,'(a)') '3) 4P shape'
       write(*,'(a)') 'results?'
       read (*,*) shpe
 c
@@ -156,47 +109,26 @@ c  average quark separation (dqq)
 c  --------------
 c
       select case (shpe)
-      case(:2,9)
+      case(:2)
 
-         if(shpe == 9) then nloop = 7
-         else nloop = 9
-         endif
+         nlx= 12
+         nly= 6
 
-         rs(1) = 1.24402 * lsize
-         rs(2) = 2.15470 * lsize
-         rs(3) = 2.48803 * lsize
-         rs(4) = 3.39872 * lsize
-         rs(5) = 4.64273 * lsize
-         rs(6) = 5.88675 * lsize
-         rs(7) = 7.13077 * lsize
-         rs(8) = 8.04145 * lsize
-         rs(9) = 9.28547 * lsize
+         do ilx = 1, nlx
+            do ily = 1, nly
 
-         dqq(1) = 2.15738 * lsize
-         dqq(2) = 3.73703 * lsize
-         dqq(3) = 4.31476 * lsize
-         dqq(4) = 5.88730 * lsize
-         dqq(5) = 8.04151 * lsize
-         dqq(6) = 10.1971 * lsize
-         dqq(7) = 12.3533 * lsize
-         dqq(8) = 13.9283 * lsize
-         dqq(9) = 16.0830 * lsize
+               rs(ilx,ily)=
+              dqq(ilx,ily)= (4.d0*ily+2.d0*ilx)*lsize
+            end do
+         end do
 
-      case(3:4)
+      case(3)
 
-         nloop = 5
+         nlx= 6
 
-         rs(1) = 1.24402 * lsize
-         rs(2) = 2.15470 * lsize
-         rs(3) = 2.48803 * lsize
-         rs(4) = 3.39872 * lsize
-         rs(5) = 7.13077 * lsize
+         do ilx = 1, nlx
 
-         dqq(1) = 2.15738 * lsize
-         dqq(2) = 3.73703 * lsize
-         dqq(3) = 4.31476 * lsize
-         dqq(4) = 5.88730 * lsize
-         dqq(5) = 12.3533 * lsize
+           rs(ilx,1)=
 
       case (5)
 

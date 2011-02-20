@@ -18,7 +18,7 @@
 #Linux g95
 COMPILER  := gfortran
 INCLUDE   := -I../GSnew
-CFLAGS    := -ffixed-line-length-132 -floop-interchange -floop-strip-mine -floop-block
+CFLAGS    := -ffixed-line-length-256 -floop-interchange -floop-strip-mine -floop-block
 OPT       := -Wall -O2 -march=native -fconvert=big-endian
 PREP      := -cpp
 #APAC  OPT      = -Mmpi -fast -W0,-fast -Mbyteswapio
@@ -76,13 +76,23 @@ TYsh  := TYshape/loops.o
 
 DQsh  := DiQuark/loops.o
 
+DDQ   := DDQ/loops.o
+
+FP    := 4P/loops.o
+
 QQ    := qqbar/loops.o
 
 DLT   := Delta/loops.o
 
+HDLT   := HDelta/loops.o
+
 UDLT   := UDelta/loops.o
 
-TEST  := Test/loops.o
+SDLT   := SDelta/loops.o
+
+DLTP   := DeltaP/loops.o
+
+QUAD   := Quad/loops.o
 
 EXECS := VacuumRespY \
 	VacuumRespL \
@@ -91,11 +101,15 @@ EXECS := VacuumRespY \
 	VacuumRespVY \
 	VacuumRespVY1 \
 	VacuumRespQQ \
+	VacuumRespDDQ \
+	VacuumResp4P \
 	VacuumRespDQ \
 	VacuumRespDLT \
-	VacuumRespUDLT
-
-TEXECS := VacuumRespTest
+	VacuumRespHDLT \
+	VacuumRespDLTP \
+	VacuumRespUDLT \
+	VacuumRespSDLT \
+	VacuumRespQUAD
 
 all:  gsnew essential $(EXECS)
 
@@ -151,18 +165,43 @@ VacuumRespDLT :$(COMMON) $(BAR) $(Dir)
 	$(FULLCOMMAND) -IDelta $(PREP) -c writeshape.f
 	$(FULLCOMMAND) -IDelta $(PREP) -o VacuumRespDLT $(FILES) $(COMMON) $(BAR) $(Dir) $(DLT) $(LINK)
 
+VacuumRespHDLT :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C HDelta -f ../Templates/Makefile
+	$(FULLCOMMAND) -IHDelta $(PREP) -c writeshape.f
+	$(FULLCOMMAND) -IHDelta $(PREP) -o VacuumRespHDLT $(FILES) $(COMMON) $(BAR) $(Dir) $(HDLT) $(LINK)
+
+VacuumRespDLTP :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C DeltaP -f ../Templates/Makefile
+	$(FULLCOMMAND) -IDeltaP $(PREP) -c writeshape.f
+	$(FULLCOMMAND) -IDeltaP $(PREP) -o VacuumRespDLTP $(FILES) $(COMMON) $(BAR) $(Dir) $(DLTP) $(LINK)
+
 VacuumRespUDLT :$(COMMON) $(BAR) $(Dir)
 	$(MAKE) -C UDelta -f ../Templates/Makefile
 	$(FULLCOMMAND) -IUDelta $(PREP) -c writeshape.f
 	$(FULLCOMMAND) -IUDelta $(PREP) -o VacuumRespUDLT $(FILES) $(COMMON) $(BAR) $(Dir) $(UDLT) $(LINK)
 
-test : $(COMMON) $(BAR) $(Dir)
-	$(MAKE) -C Test -f ../Templates/Makefile
-	$(FULLCOMMAND) -ITest $(PREP) -c writeshape.f
-	$(FULLCOMMAND) -ITest $(PREP) -o VacuumRespTest $(FILES) $(COMMON) $(BAR) $(Dir) $(TEST) $(LINK)
+VacuumRespSDLT :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C SDelta -f ../Templates/Makefile
+	$(FULLCOMMAND) -ISDelta $(PREP) -c writeshape.f
+	$(FULLCOMMAND) -ISDelta $(PREP) -o VacuumRespSDLT $(FILES) $(COMMON) $(BAR) $(Dir) $(SDLT) $(LINK)
+
+VacuumRespDDQ :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C DDQ
+	$(FULLCOMMAND) -IDDQ $(PREP) -c writeshapeDDQ.f
+	$(FULLCOMMAND) -IDDQ $(PREP) -o VacuumRespDDQ  VacuumResp.f writeshapeDDQ.o $(COMMON) $(BAR) $(Dir) $(DDQ) $(LINK)
+
+VacuumResp4P :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C 4P -f ../Templates/Makefile
+	$(FULLCOMMAND) -I4P $(PREP) -c writeshape.f
+	$(FULLCOMMAND) -I4P $(PREP) -o VacuumResp4P $(FILES) $(COMMON) $(BAR) $(Dir) $(FP) $(LINK)
+
+VacuumRespQUAD :$(COMMON) $(BAR) $(Dir)
+	$(MAKE) -C Quad -f ../Templates/Makefile
+	$(FULLCOMMAND) -IQuad $(PREP) -c writeshape.f
+	$(FULLCOMMAND) -IQuad $(PREP) -o VacuumRespQUAD $(FILES) $(COMMON) $(BAR) $(Dir) $(QUAD) $(LINK)
 
 clean :
-	rm -f *.o *~* *.mod $(EXECS) $(TEXECS)
+	rm -f *.o *~* *.mod $(EXECS)
 	rm -f qqbar/*.o qqbar/*~* qqbar/*.mod
 	rm -f Yshape/*.o Yshape/*~* Yshape/*.mod
 	rm -f Lshape/*.o Lshape/*~* Lshape/*.mod
@@ -172,4 +211,11 @@ clean :
 	rm -f TYshape/*.o TYshape/*~* TYshape/*.mod
 	rm -f DiQuark/*.o DiQuark/*~* DiQuark/*.mod
 	rm -f Delta/*.o Delta/*~* Delta/*.mod
-	rm -f Test/*.o Test/*~* Test/*.mod
+	rm -f HDelta/*.o HDelta/*~* HDelta/*.mod
+	rm -f DeltaP/*.o DeltaP/*~* DeltaP/*.mod
+	rm -f UDelta/*.o UDelta/*~* UDelta/*.mod
+	rm -f SDelta/*.o SDelta/*~* SDelta/*.mod
+	rm -f Quad/*.o Quad/*~* Quad/*.mod
+	rm -f DDQ/*.o DDQ/*~* DDQ/*.mod
+	rm -f 4P/*.o 4P/*~* 4P/*.mod
+

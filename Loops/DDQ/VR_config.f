@@ -1,0 +1,2 @@
+      write(configfile,'(a)') "./ddqconfig"
+
